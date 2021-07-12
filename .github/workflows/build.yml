@@ -13,7 +13,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        node: [6.14.1, 7.10.1, 8.11.0, 9.11.1, 10.8.0, 11.2.0, 12.0.0, 13.14.0, 14.0.0, 15.7.0]
+        node: [6.14.1, 7.10.1, 8.11.0, 9.11.1, 10.8.0, 11.2.0, 12.0.0, 13.14.0, 14.0.0, 15.7.0, 16.2.0]
+        include:
+          - python: python
+          - node: 16.2.0
+            python: python2
     runs-on: ubuntu-latest
     container:
       image: node:${{ matrix.node }}-alpine
@@ -23,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: apk update
-      - run: apk add --no-cache make gcc jq g++ python tar
+      - run: apk add --no-cache make gcc jq g++  ${{ matrix.python }} tar
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -35,6 +39,14 @@ jobs:
       - run: npm install --build-from-source
         env:
           EXTRA_NODE_PRE_GYP_FLAGS: --target_libc=musl
+      - run: ls -lah /
+      - run: ls -lah /__w/
+      - run: ls -lah /__w/MuhammaraJS/
+      - run: ls -lah /__w/MuhammaraJS/MuhammaraJS
+      - run: ls -lah /__w/MuhammaraJS/MuhammaraJS/tests/
+      - run: ls -lah /__w/MuhammaraJS/MuhammaraJS/tests/output/
+      - run: whoami
+      - run: node -e "console.log(process.env['USER'])"
       - run: npm run test
       - run: ./node_modules/.bin/node-pre-gyp package testpackage --target_libc=musl
       - uses: actions/upload-artifact@v2
@@ -182,7 +194,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-18.04, macos-10.15, windows-2019]
-        node: [6.14.1, 7.10.1, 8.11.0, 9.11.1, 10.8.0, 11.2.0, 12.0.0, 13.14.0, 14.0.0, 15.7.0]
+        node: [6.14.1, 7.10.1, 8.11.0, 9.11.1, 10.8.0, 11.2.0, 12.0.0, 13.14.0, 14.0.0, 15.7.0, 16.2.0]
         architecture: [x64, ia32]
         include:
           - architecture: ia32
